@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cart Page</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+
+<body>
+    <!-- Container -->
+    <div class="container m-5 p-5">
+        <!-- Row -->
+        <div class="row g-5">
+            <!-- Products -->
+            <div class="col-md-9">
+                <!-- Table -->
+                <table class="table table-bordered table-striped">
+                    <tr>
+                        <th>Image</th>
+                        <th>Product</th>
+                        <th>Price</th>
+                        <th>Quantity</th>
+                        <th>Total</th>
+                        <th>Action</th>
+                    </tr>
+
+                    <!-- Single Product -->
+                    <tr class="product">
+                        <td><img src="https://s.cdpn.io/3/dingo-dog-bones.jpg" width="100"></td>
+                        <td>
+                            <b>Dingo Dog Bones</b>
+                            <p>The best dog bones of all time. Holy crap. Your dog will be begging for these things! I
+                                got curious once and ate one myself. I'm a fan.</p>
+                        </td>
+                        <td class="product-price">10.00 ৳</td>
+                        <td class="product-quantity">
+                            <input type="number" class="form-control" value="2" min="1">
+                        </td>
+                        <td class="product-line-price">20.00 ৳</td>
+                        <td class="product-removal text-center">
+                            <button class="btn btn-sm btn-danger remove-product">X</button>
+                        </td>
+                    </tr>
+                    <!--/ Single Product -->
+                </table>
+                <!--/ Table -->
+            </div>
+            <!--/ Products -->
+
+            <!-- Calculation -->
+            <div class="col-md-3 p-0">
+                <!-- Totals -->
+                <div class="totals">
+                    <ol class="list-group mb-2">
+                        <li class="list-group-item d-flex justify-content-between">
+                            <span>Subtotal:</span>
+                            <span class="totals-value fw-bold" id="cart-subtotal">20.00 ৳</span>
+                        </li>
+
+                        <li class="list-group-item d-flex justify-content-between">
+                            <span>Tax (5%):</span>
+                            <span class="totals-value fw-bold" id="cart-tax">01.00 ৳</span>
+                        </li>
+
+                        <li class="list-group-item d-flex justify-content-between">
+                            <span>Shipping:</span>
+                            <span class="totals-value fw-bold" id="cart-shipping">15.00 ৳</span>
+                        </li>
+
+                        <li class="list-group-item d-flex justify-content-between">
+                            <span>Grand Total:</span>
+                            <span class="totals-value fw-bold" id="cart-total">35.00 ৳</span>
+                        </li>
+                    </ol>
+                </div>
+                <!-- /Totals -->
+            </div>
+            <!--/ Calculation -->
+        </div>
+        <!--/ row -->
+    </div>
+    <!-- Container -->
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(function () {
+            /* Set rates + misc */
+            var taxRate = 0.05;
+            var shippingRate = 15.00;
+            var fadeTime = 300;
+
+
+            /* Assign actions */
+            $('.product-quantity input').change(function () {
+                updateQuantity(this);
+            });
+
+            $('.product-removal button').click(function () {
+                removeItem(this);
+            });
+
+
+            /* Recalculate cart */
+            function recalculateCart() {
+                var subtotal = 0;
+
+                /* Sum up row totals */
+                $('.product').each(function () {
+                    subtotal += parseFloat($(this).children('.product-line-price').text());
+                });
+
+                /* Calculate totals */
+                var tax = subtotal * taxRate;
+                var shipping = (subtotal > 0 ? shippingRate : 0);
+                var total = subtotal + tax + shipping;
+
+                /* Update totals display */
+                $('.totals-value').fadeOut(fadeTime, function () {
+                    $('#cart-subtotal').html(subtotal.toFixed(2) + ' ৳');
+                    $('#cart-tax').html(tax.toFixed(2) + ' ৳');
+                    $('#cart-shipping').html(shipping.toFixed(2) + ' ৳');
+                    $('#cart-total').html(total.toFixed(2) + ' ৳');
+                    if (total == 0) {
+                        $('.checkout').fadeOut(fadeTime);
+                    } else {
+                        $('.checkout').fadeIn(fadeTime);
+                    }
+                    $('.totals-value').fadeIn(fadeTime);
+                });
+            }
+
+
+            /* Update quantity */
+            function updateQuantity(quantityInput) {
+                /* Calculate line price */
+                var productRow = $(quantityInput).parent().parent();
+                var price = parseFloat(productRow.children('.product-price').text());
+                var quantity = $(quantityInput).val();
+                var linePrice = price * quantity;
+
+                /* Update line price display and recalc cart totals */
+                productRow.children('.product-line-price').each(function () {
+                    $(this).fadeOut(fadeTime, function () {
+                        $(this).text(linePrice.toFixed(2) + ' ৳');
+                        recalculateCart();
+                        $(this).fadeIn(fadeTime);
+                    });
+                });
+            }
+
+
+            /* Remove item from cart */
+            function removeItem(removeButton) {
+                /* Remove row from DOM and recalc cart total */
+                var productRow = $(removeButton).parent().parent();
+                productRow.slideUp(fadeTime, function () {
+                    productRow.remove();
+                    recalculateCart();
+                });
+            }
+        });
+    </script>
+</body>
+
+</html>
