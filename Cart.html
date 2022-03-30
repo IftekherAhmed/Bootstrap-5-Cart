@@ -37,9 +37,36 @@
                         </td>
                         <td class="product-price">10.00 ৳</td>
                         <td class="product-quantity">
-                            <input type="number" class="form-control" value="2" min="1">
+                            <div class="input-group"> 
+                                <button class="input-group-text quantity-minus">-</button> 
+                                <input type="text" class="form-control" value="2"> 
+                                <button class="input-group-text quantity-plus">+</button> 
+                            </div>
                         </td>
                         <td class="product-line-price">20.00 ৳</td>
+                        <td class="product-removal text-center">
+                            <button class="btn btn-sm btn-danger remove-product">X</button>
+                        </td>
+                    </tr>
+                    <!--/ Single Product -->
+
+                    <!-- Single Product -->
+                    <tr class="product">
+                        <td><img src="https://s.cdpn.io/3/dingo-dog-bones.jpg" width="100"></td>
+                        <td>
+                            <b>Dingo Dog Bones</b>
+                            <p>The best dog bones of all time. Holy crap. Your dog will be begging for these things! I
+                                got curious once and ate one myself. I'm a fan.</p>
+                        </td>
+                        <td class="product-price">15.00 ৳</td>
+                        <td class="product-quantity">
+                            <div class="input-group"> 
+                                <button class="input-group-text quantity-minus">-</button> 
+                                <input type="text" class="form-control" value="2"> 
+                                <button class="input-group-text quantity-plus">+</button> 
+                            </div>
+                        </td>
+                        <td class="product-line-price">30.00 ৳</td>
                         <td class="product-removal text-center">
                             <button class="btn btn-sm btn-danger remove-product">X</button>
                         </td>
@@ -57,12 +84,12 @@
                     <ol class="list-group mb-2">
                         <li class="list-group-item d-flex justify-content-between">
                             <span>Subtotal:</span>
-                            <span class="totals-value fw-bold" id="cart-subtotal">20.00 ৳</span>
+                            <span class="totals-value fw-bold" id="cart-subtotal">50.00 ৳</span>
                         </li>
 
                         <li class="list-group-item d-flex justify-content-between">
                             <span>Tax (5%):</span>
-                            <span class="totals-value fw-bold" id="cart-tax">01.00 ৳</span>
+                            <span class="totals-value fw-bold" id="cart-tax">02.50 ৳</span>
                         </li>
 
                         <li class="list-group-item d-flex justify-content-between">
@@ -72,7 +99,7 @@
 
                         <li class="list-group-item d-flex justify-content-between">
                             <span>Grand Total:</span>
-                            <span class="totals-value fw-bold" id="cart-total">35.00 ৳</span>
+                            <span class="totals-value fw-bold" id="cart-total">67.50 ৳</span>
                         </li>
                     </ol>
                 </div>
@@ -94,10 +121,27 @@
 
 
             /* Assign actions */
+
+            // Product Quantity Increase
+            $('.quantity-plus').click(function () {
+                $(this).prev().val(+$(this).prev().val() + 1);
+                updateQuantity($(this).prev());
+            });
+            
+            // Product Quantity Decrease
+            $('.quantity-minus').click(function () {
+                if ($(this).next().val() > 1) {
+                    $(this).next().val(+$(this).next().val() - 1);
+                    updateQuantity($(this).next());
+                }
+            });            
+
+            // Product Quantity Change by Input
             $('.product-quantity input').change(function () {
                 updateQuantity(this);
             });
 
+            // Product Remove
             $('.product-removal button').click(function () {
                 removeItem(this);
             });
@@ -136,7 +180,7 @@
             /* Update quantity */
             function updateQuantity(quantityInput) {
                 /* Calculate line price */
-                var productRow = $(quantityInput).parent().parent();
+                var productRow = $(quantityInput).parent().parent().parent();
                 var price = parseFloat(productRow.children('.product-price').text());
                 var quantity = $(quantityInput).val();
                 var linePrice = price * quantity;
